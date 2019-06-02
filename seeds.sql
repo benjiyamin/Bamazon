@@ -13,7 +13,7 @@ VALUES
 ;
 
 
-INSERT INTO products (product_name, department_id, price, stock_quantity)
+INSERT INTO products (`name`, department_id, price, stock_quantity)
 VALUES 
 ('Basketball', 1, 29.00, 10),
 ('iPhone Case', 2, 10.00, 9),

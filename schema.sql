@@ -14,7 +14,7 @@ CREATE TABLE departments (
 
 CREATE TABLE products (
     id INT NOT NULL AUTO_INCREMENT,
-    product_name VARCHAR(255) NOT NULL UNIQUE,
+    `name` VARCHAR(255) NOT NULL UNIQUE,
     department_id INT NOT NULL,
     price FLOAT(2) NOT NULL,
     stock_quantity INT NOT NULL,

@@ -35,7 +35,7 @@ function getProducts() {
   // Return new promise 
   return new Promise(function (resolve, reject) {
     // Do async job
-    let query = 'SELECT products.id, products.product_name, '
+    let query = 'SELECT products.id, products.name, '
     query += '(departments.name) AS department_name, products.price, '
     query += 'products.stock_quantity, products.product_sales '
     query += 'FROM products '
@@ -66,7 +66,7 @@ function printProducts(products, showSales = false) {
   products.forEach(product => {
     let row = [
       product.id,
-      product.product_name,
+      product.name,
       product.department_name,
       {
         hAlign: 'right',
@@ -92,7 +92,7 @@ function promptProducts(products) {
         type: 'list',
         name: 'productName',
         message: 'Which product would you like to buy?',
-        choices: products.map(product => product.product_name)
+        choices: products.map(product => product.name)
       },
       {
         type: 'number',
@@ -104,7 +104,7 @@ function promptProducts(products) {
       let productId;
       for (let i = 0; i < products.length; i++) {
         const product = products[i];
-        if (product.product_name === answers.productName) {
+        if (product.name === answers.productName) {
           productId = product.id
           break
         }
@@ -182,7 +182,7 @@ function printOrder(product, quantity) {
   })
   table.push([
     quantity,
-    product.product_name,
+    product.name,
     formatUSD(product.price),
     formatUSD(product.price * quantity) // Total Price
   ])

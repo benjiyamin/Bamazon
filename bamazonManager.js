@@ -69,7 +69,7 @@ function promptMenu() {
 
 
 function getLowInventory(maxQty = 5) {
-  let query = 'SELECT products.id, products.product_name, '
+  let query = 'SELECT products.id, products.name, '
   query += 'departments.name, products.price, '
   query += 'products.stock_quantity, products.product_sales '
   query += 'FROM products '
@@ -105,7 +105,7 @@ function promptProducts(products) {
       let productId;
       for (let i = 0; i < products.length; i++) {
         const product = products[i];
-        if (product.product_name === answers.productName) {
+        if (product.name === answers.productName) {
           productId = product.id
           break
         }
@@ -132,10 +132,10 @@ function addProduct(id, stockQuantity) {
 }
 
 
-function createProduct(productName, departmentId, price, stockQuantity) {
+function createProduct(name, departmentId, price, stockQuantity) {
   let query = 'INSERT INTO products SET ?'
   let params = {
-    product_name: productName,
+    name: name,
     department_id: departmentId,
     price: price,
     stock_quantity: stockQuantity
