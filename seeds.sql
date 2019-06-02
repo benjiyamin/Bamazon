@@ -1,7 +1,7 @@
 USE bamazon;
 
 
-INSERT INTO departments (id, department_name, overhead_costs)
+INSERT INTO departments (id, `name`, overhead_costs)
 VALUES 
 (1, 'Sports & Outdoors', 2900.00),
 (2, 'Electronics & Accessories', 1000.00),

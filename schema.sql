@@ -6,7 +6,7 @@ USE bamazon;
 
 CREATE TABLE departments (
     id INT NOT NULL AUTO_INCREMENT,
-    department_name VARCHAR(255) NOT NULL UNIQUE,
+    `name` VARCHAR(255) NOT NULL UNIQUE,
     overhead_costs FLOAT(2) NOT NULL,
     PRIMARY KEY (id)
 );

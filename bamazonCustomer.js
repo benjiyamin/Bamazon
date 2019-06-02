@@ -36,7 +36,7 @@ function getProducts() {
   return new Promise(function (resolve, reject) {
     // Do async job
     let query = 'SELECT products.id, products.product_name, '
-    query += 'departments.department_name, products.price, '
+    query += '(departments.name) AS department_name, products.price, '
     query += 'products.stock_quantity, products.product_sales '
     query += 'FROM products '
     query += 'LEFT JOIN departments ON products.department_id=departments.id;'

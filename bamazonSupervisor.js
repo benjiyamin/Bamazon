@@ -55,7 +55,7 @@ function getDepartments() {
   // Return new promise 
   return new Promise(function (resolve, reject) {
     // Do async job
-    let query = 'SELECT departments.id, departments.department_name, '
+    let query = 'SELECT departments.id, departments.name, '
     query += 'departments.overhead_costs, '
     query += 'SUM(products.product_sales) AS product_sales '
     query += 'FROM departments '
@@ -86,7 +86,7 @@ function printDepartments(departments) {
 
     table.push([
       department.id,
-      department.department_name,
+      department.name,
       {
         hAlign: 'right',
         content: formatUSD(department.overhead_costs)
@@ -105,10 +105,10 @@ function printDepartments(departments) {
 }
 
 
-function createDepartment(departmentName, overheadCosts) {
+function createDepartment(name, overheadCosts) {
   let query = 'INSERT INTO departments SET ?'
   let params = {
-    department_name: departmentName,
+    name: name,
     overhead_costs: overheadCosts
   }
   connection.query(query, params, function (error, response) {

@@ -70,7 +70,7 @@ function promptMenu() {
 
 function getLowInventory(maxQty = 5) {
   let query = 'SELECT products.id, products.product_name, '
-  query += 'departments.department_name, products.price, '
+  query += 'departments.name, products.price, '
   query += 'products.stock_quantity, products.product_sales '
   query += 'FROM products '
   query += 'INNER JOIN departments ON products.department_id=departments.id '
@@ -162,7 +162,7 @@ function promptNewProduct(departments) {
         type: 'list',
         name: 'departmentName',
         message: 'What is the department name?',
-        choices: departments.map(department => department.department_name)
+        choices: departments.map(department => department.name)
       },
       {
         type: 'number',
@@ -185,7 +185,7 @@ function promptNewProduct(departments) {
       let departmentId;
       for (let i = 0; i < departments.length; i++) {
         const department = departments[i];
-        if (department.department_name === answers.departmentName) {
+        if (department.name === answers.departmentName) {
           departmentId = department.id
           break
         }
