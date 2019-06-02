@@ -26,7 +26,7 @@ function promptMenu() {
     .prompt([{
       type: 'list',
       name: 'menuChoice',
-      message: 'What would you like to do?',
+      message: 'Manager Action:',
       choices: MENU_CHOICES
     }])
     .then(function (answers) {
@@ -92,13 +92,13 @@ function promptProducts(products) {
     .prompt([{
         type: 'list',
         name: 'productName',
-        message: 'Which product would you like to add?',
+        message: 'Product:',
         choices: products.map(product => product.name)
       },
       {
         type: 'number',
         name: 'quantity',
-        message: 'How many would you like to add?'
+        message: 'Quantity to Add to Stock:'
       },
     ])
     .then(function (answers) {
@@ -153,7 +153,7 @@ function promptNewProduct(departments) {
     .prompt([{
         type: 'input',
         name: 'productName',
-        message: 'What is the product name?',
+        message: 'Product Name:',
         validate: function (value) {
           return !!value
         }
@@ -161,13 +161,13 @@ function promptNewProduct(departments) {
       {
         type: 'list',
         name: 'departmentName',
-        message: 'What is the department name?',
+        message: 'Department:',
         choices: departments.map(department => department.name)
       },
       {
         type: 'number',
         name: 'price',
-        message: 'What is the price?',
+        message: 'Price:',
         validate: function (value) {
           return !isNaN(value)
         }
@@ -175,7 +175,7 @@ function promptNewProduct(departments) {
       {
         type: 'number',
         name: 'stockQuantity',
-        message: 'How many should be added?',
+        message: 'Quantity to Stock:',
         validate: function (value) {
           return !isNaN(value)
         }

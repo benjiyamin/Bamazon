@@ -26,7 +26,7 @@ function promptMenu() {
     .prompt([{
       type: 'list',
       name: 'menuChoice',
-      message: 'What would you like to do?',
+      message: 'Supervisor Action:',
       choices: MENU_CHOICES
     }])
     .then(function (answers) {
@@ -124,7 +124,7 @@ function promptNewDepartment() {
     .prompt([{
         type: 'input',
         name: 'departmentName',
-        message: 'What is the department name?',
+        message: 'Department Name:',
         validate: function (value) {
           return !!value
         }
@@ -132,7 +132,7 @@ function promptNewDepartment() {
       {
         type: 'number',
         name: 'overheadCosts',
-        message: 'What are the overhead costs?',
+        message: 'Overhead Costs:',
         validate: function (value) {
           return !isNaN(value)
         }

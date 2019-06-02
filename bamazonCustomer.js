@@ -91,13 +91,13 @@ function promptProducts(products) {
     .prompt([{
         type: 'list',
         name: 'productName',
-        message: 'Which product would you like to buy?',
+        message: 'Product:',
         choices: products.map(product => product.name)
       },
       {
         type: 'number',
         name: 'quantity',
-        message: 'How many would you like to buy?'
+        message: 'Quantity:'
       },
     ])
     .then(function (answers) {
