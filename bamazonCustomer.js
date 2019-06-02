@@ -12,18 +12,32 @@ let connection = mysql.createConnection({
 })
 
 
-connection.connect(function (error) {
-  if (error) throw error;
-  getProducts()
-})
+// When node executes script
+if (!module.parent) {
+  connection.connect(function (error) {
+    if (error) throw error;
+    getProducts()
+      .then(function (response) {
+        let products = response
+        printProducts(products)
+        promptProducts(products)
+      })
+  })
+}
 
 
 function getProducts() {
-  let query = 'SELECT * FROM products'
-  connection.query(query, function (error, response) {
-    if (error) throw error
-    let products = response
-    printProducts(products)
+  // Return new promise 
+  return new Promise(function (resolve, reject) {
+    // Do async job
+    let query = 'SELECT * FROM products'
+    connection.query(query, function (error, response) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(response);
+      }
+    })
   })
 }
 
@@ -48,7 +62,6 @@ function printProducts(products) {
     ])
   })
   console.log(table.toString())
-  promptProducts(products)
 }
 
 
@@ -157,9 +170,23 @@ function promptEnd() {
     .then(function (answers) {
       if (answers.startOver) {
         getProducts()
+          .then(function (response) {
+            let products = response
+            printProducts(products)
+            promptProducts(products)
+          })
       } else {
         console.log('Thanks for stopping by! Exiting..')
+        connection.end()
         process.exit()
       }
     })
+}
+
+
+module.exports = {
+  connection: connection,
+  getProducts: getProducts,
+  printProducts: printProducts,
+  updateProduct: updateProduct
 }
