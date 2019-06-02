@@ -12,6 +12,11 @@ let connection = mysql.createConnection({
 })
 
 
+function formatUSD(amount) {
+  return `$ ${amount.toFixed(2)}`
+}
+
+
 // When node executes script
 if (!module.parent) {
   connection.connect(function (error) {
@@ -30,7 +35,11 @@ function getProducts() {
   // Return new promise 
   return new Promise(function (resolve, reject) {
     // Do async job
-    let query = 'SELECT * FROM products'
+    let query = 'SELECT products.id, products.product_name, '
+    query += 'departments.department_name, products.price, '
+    query += 'products.stock_quantity, products.product_sales '
+    query += 'FROM products '
+    query += 'LEFT JOIN departments ON products.department_id=departments.id;'
     connection.query(query, function (error, response) {
       if (error) {
         reject(error);
@@ -42,24 +51,36 @@ function getProducts() {
 }
 
 
-function printProducts(products) {
+function printProducts(products, showSales = false) {
+  let head = [
+    'ID',
+    'Product Name',
+    'Department Name',
+    'Price',
+    'Stock Quantity'
+  ]
+  if (showSales) head.push('Product Sales')
   let table = new Table({
-    head: [
-      'ID',
-      'Product Name',
-      'Department Name',
-      'Price',
-      'Stock Quantity'
-    ]
+    head: head
   })
   products.forEach(product => {
-    table.push([
+    let row = [
       product.id,
       product.product_name,
       product.department_name,
-      product.price.toFixed(2),
+      {
+        hAlign: 'right',
+        content: formatUSD(product.price)
+      },
       product.stock_quantity
-    ])
+    ]
+    if (showSales) {
+      row.push({
+        hAlign: 'right',
+        content: formatUSD(product.product_sales)
+      })
+    }
+    table.push(row)
   })
   console.log(table.toString())
 }
@@ -95,12 +116,11 @@ function buyProduct(id, orderQuantity) {
   connection.query(query, params, function (error, response) {
     if (error) throw error
     let product = response[0]
-    if (orderQuantity < product.stock_quantity) {
+    if (orderQuantity <= product.stock_quantity) {
       let quantity = product.stock_quantity - orderQuantity
-      updateProduct(id, quantity)
-      printOrder(product, orderQuantity)
-    } else if (orderQuantity === product.stock_quantity) {
-      deleteProduct(id)
+      let sales = orderQuantity * product.price
+      let productSales = product.product_sales + sales
+      updateProduct(id, quantity, productSales)
       printOrder(product, orderQuantity)
     } else {
       console.log('Insufficient quantity! Try again.')
@@ -110,7 +130,7 @@ function buyProduct(id, orderQuantity) {
 }
 
 
-function updateProduct(id, quantity) {
+function updateProduct(id, quantity, productSales) {
   let query = 'UPDATE products SET ? WHERE ?'
   let params = [{
       stock_quantity: quantity
@@ -119,6 +139,9 @@ function updateProduct(id, quantity) {
       id: id
     }
   ]
+  if (productSales) {
+    params[0].product_sales = productSales
+  }
   connection.query(query, params, function (error, response) {
     if (error) throw error
     return response[0]
@@ -126,6 +149,7 @@ function updateProduct(id, quantity) {
 }
 
 
+/*
 function deleteProduct(id) {
   let query = 'DELETE FROM products WHERE ?'
   let params = {
@@ -136,6 +160,7 @@ function deleteProduct(id) {
     return response[0]
   })
 }
+*/
 
 
 function printOrder(product, quantity) {
@@ -151,8 +176,8 @@ function printOrder(product, quantity) {
   table.push([
     quantity,
     product.product_name,
-    `$ ${product.price.toFixed(2)}`,
-    `$ ${(product.price * quantity).toFixed(2)}`
+    formatUSD(product.price),
+    formatUSD(product.price * quantity) // Total Price
   ])
   console.log(table.toString())
   promptEnd()
@@ -186,6 +211,7 @@ function promptEnd() {
 
 module.exports = {
   connection: connection,
+  formatUSD: formatUSD,
   getProducts: getProducts,
   printProducts: printProducts,
   updateProduct: updateProduct

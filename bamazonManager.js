@@ -1,6 +1,7 @@
 const inquirer = require('inquirer')
 
 const bamazonCustomer = require('./bamazonCustomer')
+const bamazonSupervisor = require('./bamazonSupervisor')
 
 
 const connection = bamazonCustomer.connection
@@ -34,7 +35,8 @@ function promptMenu() {
           bamazonCustomer.getProducts()
             .then(function (response) {
               let products = response
-              bamazonCustomer.printProducts(products)
+              let showSales = true
+              bamazonCustomer.printProducts(products, showSales)
               promptEnd()
             })
           break
@@ -52,7 +54,11 @@ function promptMenu() {
           break
 
         case ADD_NEW_PRODUCT:
-          promptNewProduct()
+          bamazonSupervisor.getDepartments()
+            .then(function (response) {
+              let departments = response
+              promptNewProduct(departments)
+            })
           break
 
         default:
@@ -63,12 +69,18 @@ function promptMenu() {
 
 
 function getLowInventory(maxQty = 5) {
-  let query = 'SELECT * FROM products WHERE stock_quantity <= ?'
+  let query = 'SELECT products.id, products.product_name, '
+  query += 'departments.department_name, products.price, '
+  query += 'products.stock_quantity, products.product_sales '
+  query += 'FROM products '
+  query += 'INNER JOIN departments ON products.department_id=departments.id '
+  query += 'WHERE products.stock_quantity <= ?;'
   let params = [maxQty]
   connection.query(query, params, function (error, response) {
     if (error) throw error
     let products = response
-    bamazonCustomer.printProducts(products)
+    let showSales = true
+    bamazonCustomer.printProducts(products, showSales)
     promptEnd()
   })
 }
@@ -113,11 +125,11 @@ function addProduct(id, stockQuantity) {
 }
 
 
-function createProduct(productName, departmentName, price, stockQuantity) {
+function createProduct(productName, departmentId, price, stockQuantity) {
   let query = 'INSERT INTO products SET ?'
   let params = {
     product_name: productName,
-    department_name: departmentName,
+    department_id: departmentId,
     price: price,
     stock_quantity: stockQuantity
   }
@@ -129,7 +141,7 @@ function createProduct(productName, departmentName, price, stockQuantity) {
 }
 
 
-function promptNewProduct() {
+function promptNewProduct(departments) {
   inquirer
     .prompt([{
         type: 'input',
@@ -140,12 +152,10 @@ function promptNewProduct() {
         }
       },
       {
-        type: 'input',
+        type: 'list',
         name: 'departmentName',
         message: 'What is the department name?',
-        validate: function (value) {
-          return !!value
-        }
+        choices: departments.map(department => department.department_name)
       },
       {
         type: 'number',
@@ -165,9 +175,17 @@ function promptNewProduct() {
       },
     ])
     .then(function (answers) {
+      let departmentId;
+      for (let i = 0; i < departments.length; i++) {
+        const department = departments[i];
+        if (department.department_name === answers.departmentName) {
+          departmentId = department.id
+          break
+        }
+      }
       createProduct(
         answers.productName,
-        answers.departmentName,
+        departmentId,
         answers.price,
         answers.stockQuantity
       )
