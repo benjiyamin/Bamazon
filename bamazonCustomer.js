@@ -90,9 +90,9 @@ function promptProducts(products) {
   inquirer
     .prompt([{
         type: 'list',
-        name: 'productId',
+        name: 'productName',
         message: 'Which product would you like to buy?',
-        choices: products.map(product => product.id)
+        choices: products.map(product => product.product_name)
       },
       {
         type: 'number',
@@ -101,9 +101,16 @@ function promptProducts(products) {
       },
     ])
     .then(function (answers) {
-      let id = answers.productId
+      let productId;
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        if (product.product_name === answers.productName) {
+          productId = product.id
+          break
+        }
+      }
       let orderQuantity = answers.quantity
-      buyProduct(id, orderQuantity)
+      buyProduct(productId, orderQuantity)
     })
 }
 
