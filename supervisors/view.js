@@ -1,17 +1,15 @@
 const inquirer = require('inquirer')
 const Table = require('cli-table3')
 
-const bamazonCustomer = require('./bamazonCustomer')
-const formatUSD = bamazonCustomer.formatUSD
+const settings = require('../settings')
+const model = require('./model')
 
 
-const connection = bamazonCustomer.connection
-// When node executes script
-if (!module.parent) {
-  connection.connect(function (error) {
-    if (error) throw error;
-    promptMenu()
-  })
+const formatUSD = settings.formatUSD
+
+
+function initialize() {
+  promptMenu()
 }
 
 
@@ -32,7 +30,7 @@ function promptMenu() {
     .then(function (answers) {
       switch (answers.menuChoice) {
         case VIEW_PRODUCTS_SALES_BY_DEPARTMENT:
-          getDepartments()
+          model.getDepartments()
             .then(function (response) {
               let products = response
               printDepartments(products)
@@ -48,27 +46,6 @@ function promptMenu() {
           throw Error('Invalid menu choice')
       }
     })
-}
-
-
-function getDepartments() {
-  // Return new promise 
-  return new Promise(function (resolve, reject) {
-    // Do async job
-    let query = 'SELECT departments.id, departments.name, '
-    query += 'departments.overhead_costs, '
-    query += 'SUM(products.product_sales) AS product_sales '
-    query += 'FROM departments '
-    query += 'LEFT JOIN products ON departments.id=products.department_id '
-    query += 'GROUP BY products.department_id;'
-    connection.query(query, function (error, response) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(response);
-      }
-    })
-  })
 }
 
 
@@ -105,20 +82,6 @@ function printDepartments(departments) {
 }
 
 
-function createDepartment(name, overheadCosts) {
-  let query = 'INSERT INTO departments SET ?'
-  let params = {
-    name: name,
-    overhead_costs: overheadCosts
-  }
-  connection.query(query, params, function (error, response) {
-    if (error) throw error
-    console.log(response.affectedRows + " departments inserted!\n");
-    promptEnd()
-  })
-}
-
-
 function promptNewDepartment() {
   inquirer
     .prompt([{
@@ -139,10 +102,14 @@ function promptNewDepartment() {
       }
     ])
     .then(function (answers) {
-      createDepartment(
-        answers.departmentName,
-        answers.overheadCosts
-      )
+      model.createDepartment(
+          answers.departmentName,
+          answers.overheadCosts
+        )
+        .then(function (response) {
+          console.log(response.affectedRows + " departments inserted!\n");
+          promptEnd()
+        })
     })
 }
 
@@ -160,7 +127,7 @@ function promptEnd() {
         promptMenu()
       } else {
         console.log('Thanks for stopping by! Exiting..')
-        connection.end()
+        settings.connection.end()
         process.exit()
       }
     })
@@ -168,5 +135,5 @@ function promptEnd() {
 
 
 module.exports = {
-  getDepartments: getDepartments
+  initialize: initialize
 }

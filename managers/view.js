@@ -1,14 +1,15 @@
 const inquirer = require('inquirer')
 
-const bamazonCustomer = require('./bamazonCustomer')
-const bamazonSupervisor = require('./bamazonSupervisor')
+const settings = require('../settings')
+const model = require('./model')
+const customerModel = require('../customers/model')
+const customerView = require('../customers/view')
+const supervisorModel = require('../supervisors/model')
 
 
-const connection = bamazonCustomer.connection
-connection.connect(function (error) {
-  if (error) throw error;
+function initialize() {
   promptMenu()
-})
+}
 
 
 function promptMenu() {
@@ -32,21 +33,27 @@ function promptMenu() {
     .then(function (answers) {
       switch (answers.menuChoice) {
         case VIEW_PRODUCTS_FOR_SALE:
-          bamazonCustomer.getProducts()
+          customerModel.getProducts()
             .then(function (response) {
               let products = response
               let showSales = true
-              bamazonCustomer.printProducts(products, showSales)
+              customerView.printProducts(products, showSales)
               promptEnd()
             })
           break
 
         case VIEW_LOW_INVENTORY:
-          getLowInventory()
+          model.getLowInventory()
+            .then(function (response) {
+              let products = response
+              let showSales = true
+              customerView.printProducts(products, showSales)
+              promptEnd()
+            })
           break
 
         case ADD_TO_INVENTORY:
-          bamazonCustomer.getProducts()
+          customerModel.getProducts()
             .then(function (response) {
               let products = response
               promptProducts(products)
@@ -54,7 +61,7 @@ function promptMenu() {
           break
 
         case ADD_NEW_PRODUCT:
-          bamazonSupervisor.getDepartments()
+          supervisorModel.getDepartments()
             .then(function (response) {
               let departments = response
               promptNewProduct(departments)
@@ -68,26 +75,8 @@ function promptMenu() {
 }
 
 
-function getLowInventory(maxQty = 5) {
-  let query = 'SELECT products.id, products.name, '
-  query += 'departments.name, products.price, '
-  query += 'products.stock_quantity, products.product_sales '
-  query += 'FROM products '
-  query += 'INNER JOIN departments ON products.department_id=departments.id '
-  query += 'WHERE products.stock_quantity <= ?;'
-  let params = [maxQty]
-  connection.query(query, params, function (error, response) {
-    if (error) throw error
-    let products = response
-    let showSales = true
-    bamazonCustomer.printProducts(products, showSales)
-    promptEnd()
-  })
-}
-
-
 function promptProducts(products) {
-  bamazonCustomer.printProducts(products)
+  customerView.printProducts(products)
   inquirer
     .prompt([{
         type: 'list',
@@ -110,41 +99,16 @@ function promptProducts(products) {
           break
         }
       }
-      let orderQuantity = answers.quantity
-      addProduct(productId, orderQuantity)
+      model.getProduct(productId)
+        .then(function (response) {
+          let product = response
+          let stockQuantity = answers.quantity
+          let quantity = product.stock_quantity + stockQuantity
+          customerModel.updateProduct(productId, quantity)
+          console.log('Success! Inventory was updated.')
+          promptEnd()
+        })
     })
-}
-
-
-function addProduct(id, stockQuantity) {
-  let query = 'SELECT * FROM products WHERE ?'
-  let params = {
-    id: id
-  }
-  connection.query(query, params, function (error, response) {
-    if (error) throw error
-    let product = response[0]
-    let quantity = product.stock_quantity + stockQuantity
-    bamazonCustomer.updateProduct(id, quantity)
-    console.log('Success! Inventory was updated.')
-    promptEnd()
-  })
-}
-
-
-function createProduct(name, departmentId, price, stockQuantity) {
-  let query = 'INSERT INTO products SET ?'
-  let params = {
-    name: name,
-    department_id: departmentId,
-    price: price,
-    stock_quantity: stockQuantity
-  }
-  connection.query(query, params, function (error, response) {
-    if (error) throw error
-    console.log(response.affectedRows + " product inserted!\n");
-    promptEnd()
-  })
 }
 
 
@@ -190,12 +154,16 @@ function promptNewProduct(departments) {
           break
         }
       }
-      createProduct(
-        answers.productName,
-        departmentId,
-        answers.price,
-        answers.stockQuantity
-      )
+      model.createProduct(
+          answers.productName,
+          departmentId,
+          answers.price,
+          answers.stockQuantity
+        )
+        .then(function (response) {
+          console.log(response.affectedRows + " product inserted!\n");
+          promptEnd()
+        })
     })
 }
 
@@ -213,8 +181,13 @@ function promptEnd() {
         promptMenu()
       } else {
         console.log('Thanks for stopping by! Exiting..')
-        connection.end()
+        settings.connection.end()
         process.exit()
       }
     })
+}
+
+
+module.exports = {
+  initialize: initialize
 }
