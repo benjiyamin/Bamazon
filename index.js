@@ -1,43 +1,65 @@
 const inquirer = require('inquirer')
 
+const settings = require('./settings')
 const customerView = require('./customers/view')
 const managerView = require('./managers/view')
 const supervisorView = require('./supervisors/view')
 
 
-const VIEW_CUSTOMER = 'Customer'
-const VIEW_MANAGER = 'Manager'
-const VIEW_SUPERVISOR = 'Supervisor'
+const VIEW_CUSTOMER = 'Customer View'
+const VIEW_MANAGER = 'Manager View'
+const VIEW_SUPERVISOR = 'Supervisor View'
+const EXIT = 'Exit Bamazon'
 
 const MENU_CHOICES = [
   VIEW_CUSTOMER,
   VIEW_MANAGER,
-  VIEW_SUPERVISOR
+  VIEW_SUPERVISOR,
+  EXIT
 ]
 
 
-inquirer
-  .prompt([{
-    type: 'list',
-    name: 'menuChoice',
-    message: 'Main Menu',
-    choices: MENU_CHOICES
-  }])
-  .then(function (answers) {
-    switch (answers.menuChoice) {
-      case VIEW_CUSTOMER:
-        customerView.initialize()
-        break
-      
-      case VIEW_MANAGER:
-        managerView.initialize()
-        break
+function mainMenu() {
+  inquirer
+    .prompt([{
+      type: 'list',
+      name: 'menuChoice',
+      message: 'Main Menu',
+      choices: MENU_CHOICES
+    }])
+    .then(function (answers) {
+      switch (answers.menuChoice) {
+        case VIEW_CUSTOMER:
+          customerView.initialize()
+          break
 
-      case VIEW_SUPERVISOR:
-        supervisorView.initialize()
-        break
+        case VIEW_MANAGER:
+          managerView.initialize()
+          break
 
-      default:
-        throw Error('Invalid menu choice')
-    }
-  })
+        case VIEW_SUPERVISOR:
+          supervisorView.initialize()
+          break
+
+        case EXIT:
+          console.log('Thanks for stopping by! Exiting..')
+          settings.connection.end()
+          process.exit()
+          break
+
+        default:
+          throw Error('Invalid menu choice')
+      }
+    })
+}
+
+
+// When node executes script
+if (!module.parent) {
+  mainMenu()
+}
+
+
+module.exports = {
+  mainMenu: mainMenu
+}

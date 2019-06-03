@@ -10,7 +10,7 @@ function getDepartments() {
     // Do async job
     let query = 'SELECT departments.id, departments.name, '
     query += 'departments.overhead_costs, '
-    query += 'SUM(products.product_sales) AS product_sales '
+    query += 'COALESCE(SUM(products.product_sales),0) AS product_sales '
     query += 'FROM departments '
     query += 'LEFT JOIN products ON departments.id=products.department_id '
     query += 'GROUP BY products.department_id;'

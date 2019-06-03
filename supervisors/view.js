@@ -34,7 +34,8 @@ function promptMenu() {
             .then(function (response) {
               let products = response
               printDepartments(products)
-              promptEnd()
+              //promptEnd()
+              promptMenu()
             })
           break
 
@@ -60,7 +61,7 @@ function printDepartments(departments) {
     ]
   })
   departments.forEach(department => {
-
+    console.log(department.overhead_costs, department.product_sales)
     table.push([
       department.id,
       department.name,
@@ -108,28 +109,9 @@ function promptNewDepartment() {
         )
         .then(function (response) {
           console.log(response.affectedRows + " departments inserted!\n");
-          promptEnd()
+          //promptEnd()
+          promptMenu()
         })
-    })
-}
-
-
-function promptEnd() {
-  inquirer
-    .prompt([{
-      type: 'confirm',
-      name: 'startOver',
-      default: true,
-      message: 'Would you like to go back to the menu?'
-    }])
-    .then(function (answers) {
-      if (answers.startOver) {
-        promptMenu()
-      } else {
-        console.log('Thanks for stopping by! Exiting..')
-        settings.connection.end()
-        process.exit()
-      }
     })
 }
 

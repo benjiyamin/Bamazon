@@ -146,9 +146,10 @@ function promptEnd() {
             promptProducts(products)
           })
       } else {
-        console.log('Thanks for stopping by! Exiting..')
-        settings.connection.end()
-        process.exit()
+        //console.log('Thanks for stopping by! Exiting..')
+        //settings.connection.end()
+        //process.exit()
+        require('../index').mainMenu()
       }
     })
 }

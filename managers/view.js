@@ -1,6 +1,6 @@
 const inquirer = require('inquirer')
 
-const settings = require('../settings')
+//const settings = require('../settings')
 const model = require('./model')
 const customerModel = require('../customers/model')
 const customerView = require('../customers/view')
@@ -17,11 +17,13 @@ function promptMenu() {
   const VIEW_LOW_INVENTORY = 'View Low Inventory'
   const ADD_TO_INVENTORY = 'Add to Inventory'
   const ADD_NEW_PRODUCT = 'Add New Product'
+  const EXIT = 'Exit to Main Menu'
   const MENU_CHOICES = [
     VIEW_PRODUCTS_FOR_SALE,
     VIEW_LOW_INVENTORY,
     ADD_TO_INVENTORY,
-    ADD_NEW_PRODUCT
+    ADD_NEW_PRODUCT,
+    EXIT
   ]
   inquirer
     .prompt([{
@@ -38,7 +40,8 @@ function promptMenu() {
               let products = response
               let showSales = true
               customerView.printProducts(products, showSales)
-              promptEnd()
+              //promptEnd()
+              promptMenu()
             })
           break
 
@@ -48,7 +51,8 @@ function promptMenu() {
               let products = response
               let showSales = true
               customerView.printProducts(products, showSales)
-              promptEnd()
+              //promptEnd()
+              promptMenu()
             })
           break
 
@@ -66,6 +70,10 @@ function promptMenu() {
               let departments = response
               promptNewProduct(departments)
             })
+          break
+
+        case EXIT:
+          require('../index').mainMenu()
           break
 
         default:
@@ -106,7 +114,8 @@ function promptProducts(products) {
           let quantity = product.stock_quantity + stockQuantity
           customerModel.updateProduct(productId, quantity)
           console.log('Success! Inventory was updated.')
-          promptEnd()
+          //promptEnd()
+          promptMenu()
         })
     })
 }
@@ -162,28 +171,9 @@ function promptNewProduct(departments) {
         )
         .then(function (response) {
           console.log(response.affectedRows + " product inserted!\n");
-          promptEnd()
+          //promptEnd()
+          promptMenu()
         })
-    })
-}
-
-
-function promptEnd() {
-  inquirer
-    .prompt([{
-      type: 'confirm',
-      name: 'startOver',
-      default: true,
-      message: 'Would you like to go back to the menu?'
-    }])
-    .then(function (answers) {
-      if (answers.startOver) {
-        promptMenu()
-      } else {
-        console.log('Thanks for stopping by! Exiting..')
-        settings.connection.end()
-        process.exit()
-      }
     })
 }
 
