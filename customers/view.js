@@ -64,7 +64,10 @@ function promptProducts(products) {
       {
         type: 'number',
         name: 'quantity',
-        message: 'Quantity:'
+        message: 'Quantity:',
+        validate: function (value) {
+          return !isNaN(value)
+        }
       },
     ])
     .then(function (answers) {
