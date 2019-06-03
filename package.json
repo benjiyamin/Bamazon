@@ -2,7 +2,7 @@
   "name": "bamazon",
   "version": "0.1.0",
   "description": "",
-  "main": "bamazonCustomer.js",
+  "main": "index.js",
   "scripts": {
     "test": "mocha",
     "lint": "eslint ."
