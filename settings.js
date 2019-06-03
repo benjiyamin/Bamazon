@@ -10,12 +10,6 @@ let connection = mysql.createConnection({
 })
 
 
-function formatUSD(amount) {
-  return `$ ${amount.toFixed(2)}`
-}
-
-
 module.exports = {
-  connection: connection,
-  formatUSD: formatUSD
+  connection: connection
 }

@@ -1,11 +1,8 @@
 const inquirer = require('inquirer')
 const Table = require('cli-table3')
 
-const settings = require('../settings')
 const model = require('./model')
-
-
-const formatUSD = settings.formatUSD
+const formatUSD = require('../formatUSD')
 
 
 function initialize() {
