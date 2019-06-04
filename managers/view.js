@@ -113,7 +113,7 @@ function promptProducts(products) {
           let stockQuantity = answers.quantity
           let quantity = product.stock_quantity + stockQuantity
           customerModel.updateProduct(productId, quantity)
-          console.log('Success! Inventory was updated.')
+          console.log('Success! Inventory was updated. \n')
           //promptEnd()
           promptMenu()
         })

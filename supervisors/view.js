@@ -81,7 +81,7 @@ function printDepartments(departments) {
       },
     ])
   })
-  console.log(table.toString())
+  console.log(table.toString() + '\n')
 }
 
 

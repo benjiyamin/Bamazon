@@ -42,7 +42,7 @@ function mainMenu() {
           break
 
         case EXIT:
-          console.log('Thanks for stopping by! Exiting..')
+          console.log('Thanks for stopping by! Exiting.. \n')
           settings.connection.end()
           process.exit()
           break

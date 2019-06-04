@@ -46,7 +46,7 @@ function printProducts(products, showSales = false) {
     }
     table.push(row)
   })
-  console.log(table.toString())
+  console.log(table.toString() + '\n')
 }
 
 
@@ -94,7 +94,7 @@ function buyProduct(product, orderQuantity) {
     model.updateProduct(product.id, quantity, productSales)
     printOrder(product, orderQuantity)
   } else {
-    console.log('Insufficient quantity! Try again.')
+    console.log('Insufficient quantity! Try again. \n')
     model.getProducts()
       .then(function (response) {
         let products = response
@@ -121,7 +121,7 @@ function printOrder(product, quantity) {
     formatUSD(product.price),
     formatUSD(product.price * quantity) // Total Price
   ])
-  console.log(table.toString())
+  console.log(table.toString() + '\n')
   promptEnd()
 }
 
