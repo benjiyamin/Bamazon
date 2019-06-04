@@ -140,7 +140,7 @@ function promptNewProduct(departments) {
       {
         type: 'number',
         name: 'price',
-        message: 'Price:',
+        message: 'Price (USD):',
         validate: function (value) {
           return !isNaN(value)
         }

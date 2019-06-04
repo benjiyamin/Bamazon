@@ -8,11 +8,10 @@ function getProducts() {
   // Return new promise 
   return new Promise(function (resolve, reject) {
     // Do async job
-    let query = 'SELECT products.id, products.name, '
-    query += '(departments.name) AS department_name, products.price, '
-    query += 'products.stock_quantity, products.product_sales '
-    query += 'FROM products '
-    query += 'LEFT JOIN departments ON products.department_id=departments.id;'
+    let query = 'SELECT p.id, p.name, (d.name) AS department_name, p.price, '
+    query += 'p.stock_quantity, p.product_sales '
+    query += 'FROM products p '
+    query += 'LEFT JOIN departments d ON p.department_id=d.id;'
     connection.query(query, function (error, response) {
       if (error) {
         reject(error);

@@ -8,12 +8,11 @@ function getLowInventory(maxQty = 5) {
   // Return new promise 
   return new Promise(function (resolve, reject) {
     // Do async job
-    let query = 'SELECT products.id, products.name, '
-    query += '(departments.name) AS department_name, products.price, '
-    query += 'products.stock_quantity, products.product_sales '
-    query += 'FROM products '
-    query += 'INNER JOIN departments ON products.department_id=departments.id '
-    query += 'WHERE products.stock_quantity <= ?;'
+    let query = 'SELECT p.id, p.name, (d.name) AS department_name, p.price, '
+    query += 'p.stock_quantity, p.product_sales '
+    query += 'FROM products p '
+    query += 'INNER JOIN departments d ON p.department_id=d.id '
+    query += 'WHERE p.stock_quantity <= ?;'
     let params = [maxQty]
     connection.query(query, params, function (error, response) {
       if (error) {

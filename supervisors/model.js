@@ -8,12 +8,11 @@ function getDepartments() {
   // Return new promise 
   return new Promise(function (resolve, reject) {
     // Do async job
-    let query = 'SELECT departments.id, departments.name, '
-    query += 'departments.overhead_costs, '
-    query += 'COALESCE(SUM(products.product_sales),0) AS product_sales '
-    query += 'FROM departments '
-    query += 'LEFT JOIN products ON departments.id=products.department_id '
-    query += 'GROUP BY products.department_id;'
+    let query = 'SELECT d.id, d.name, d.overhead_costs, '
+    query += 'COALESCE(SUM(p.product_sales),0) AS product_sales '
+    query += 'FROM departments d '
+    query += 'LEFT JOIN products p ON d.id=p.department_id '
+    query += 'GROUP BY IFNULL(p.department_id, d.id);'
     connection.query(query, function (error, response) {
       if (error) {
         reject(error);

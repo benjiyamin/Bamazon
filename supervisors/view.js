@@ -13,9 +13,11 @@ function initialize() {
 function promptMenu() {
   const VIEW_PRODUCTS_SALES_BY_DEPARTMENT = 'View Product Sales by Department'
   const CREATE_NEW_DEPARTMENT = 'Create New Department'
+  const EXIT = 'Exit to Main Menu'
   const MENU_CHOICES = [
     VIEW_PRODUCTS_SALES_BY_DEPARTMENT,
-    CREATE_NEW_DEPARTMENT
+    CREATE_NEW_DEPARTMENT,
+    EXIT
   ]
   inquirer
     .prompt([{
@@ -40,6 +42,10 @@ function promptMenu() {
           promptNewDepartment()
           break
 
+        case EXIT:
+          require('../index').mainMenu()
+          break
+
         default:
           throw Error('Invalid menu choice')
       }
@@ -58,7 +64,6 @@ function printDepartments(departments) {
     ]
   })
   departments.forEach(department => {
-    console.log(department.overhead_costs, department.product_sales)
     table.push([
       department.id,
       department.name,
@@ -93,7 +98,7 @@ function promptNewDepartment() {
       {
         type: 'number',
         name: 'overheadCosts',
-        message: 'Overhead Costs:',
+        message: 'Overhead Costs (USD):',
         validate: function (value) {
           return !isNaN(value)
         }
