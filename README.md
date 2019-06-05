@@ -37,7 +37,7 @@ Bamazon is a database-driven Amazon-like storefront. Some of the capabilities in
     ```
     MYSQL_USERNAME=username
     MYSQL_PASSWORD=password
-```
+    ```
 
 
 ## License
